@@ -1,15 +1,15 @@
--- Noclip com pet Brainrot + UI - Roblox
+-- Noclip com Pet e UI - Versão estável e sem erros
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-local allowedUserIds = {123456789} -- Coloque seu UserId aqui
+local allowedUserIds = {123456789} -- ← Substitua por seu UserId
 
 local noclipActive = false
 local character = nil
 
+-- Detecta se o jogador está autorizado a usar o script
 local function isAllowed()
 	for _, id in ipairs(allowedUserIds) do
 		if player.UserId == id then
@@ -19,6 +19,7 @@ local function isAllowed()
 	return false
 end
 
+-- Atualiza o personagem ao spawnar
 local function setupCharacter(char)
 	character = char
 end
@@ -26,36 +27,37 @@ end
 player.CharacterAdded:Connect(setupCharacter)
 if player.Character then setupCharacter(player.Character) end
 
+-- Desativa colisão das partes do modelo
 local function disableCollision(model)
 	for _, part in ipairs(model:GetDescendants()) do
-		if part:IsA("BasePart") and part.CanCollide then
+		if part:IsA("BasePart") then
 			part.CanCollide = false
 		end
 	end
 end
 
+-- Suaviza a velocidade para não ser detectado por movimento brusco
 local function smoothVelocity(model)
 	for _, part in ipairs(model:GetDescendants()) do
 		if part:IsA("BasePart") then
 			local vel = part.AssemblyLinearVelocity
 			if vel.Magnitude > 0.05 then
-				part.AssemblyLinearVelocity = vel:Lerp(Vector3.new(0,0,0), 0.3)
+				part.AssemblyLinearVelocity = vel:Lerp(Vector3.new(0, 0, 0), 0.3)
 			end
 		end
 	end
 end
 
+-- Retorna o pet (troque o nome se for diferente no seu jogo)
 local function getPet()
 	if character then
-		local pet = character:FindFirstChild("BrainrotPet") -- Ajuste o nome do pet aqui
-		if pet then
-			return pet
-		end
+		local pet = character:FindFirstChild("BrainrotPet") -- ← Altere o nome se necessário
+		return pet
 	end
 	return nil
 end
 
--- Criar a UI
+-- Criação da UI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "NoclipUI"
 screenGui.ResetOnSpawn = false
@@ -63,48 +65,4 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local button = Instance.new("TextButton")
 button.Size = UDim2.new(0, 150, 0, 40)
-button.Position = UDim2.new(0, 20, 0, 20)
-button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-button.TextColor3 = Color3.new(1, 1, 1)
-button.Text = "Ativar Noclip"
-button.Parent = screenGui
-
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(0, 150, 0, 25)
-statusLabel.Position = UDim2.new(0, 20, 0, 65)
-statusLabel.BackgroundTransparency = 1
-statusLabel.TextColor3 = Color3.new(1, 1, 1)
-statusLabel.Text = "Status: Desativado"
-statusLabel.Parent = screenGui
-
-local function updateUI()
-	if noclipActive then
-		button.Text = "Desativar Noclip"
-		statusLabel.Text = "Status: Ativado"
-	else
-		button.Text = "Ativar Noclip"
-		statusLabel.Text = "Status: Desativado"
-	end
-end
-
-button.MouseButton1Click:Connect(function()
-	if not isAllowed() then return end
-	noclipActive = not noclipActive
-	updateUI()
-	print(noclipActive and "✅ Noclip ativado" or "❌ Noclip desativado")
-end)
-
-RunService.Heartbeat:Connect(function()
-	if noclipActive and character and character.Parent then
-		disableCollision(character)
-		smoothVelocity(character)
-		
-		local pet = getPet()
-		if pet then
-			disableCollision(pet)
-			smoothVelocity(pet)
-		end
-	end
-end)
-
-updateUI()
+button.Position = UDim2.new(0, 20,
