@@ -1,1 +1,1 @@
-https://raw.githubusercontent.com/SeuUsuario/SeuRepo/main/noclip.lua
+https://raw.githubusercontent.com/sevenscrub1/robloxscript/main/noclip.lua
